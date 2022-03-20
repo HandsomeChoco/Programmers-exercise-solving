@@ -1,5 +1,5 @@
 function solution(id_list, report, k) {
-    const [reportedUser, receiveReportCount] = getUserReports(id_list, reportSet(report));
+    const [userReportList, receiveReportCount] = getUserReports(id_list, reportSet(report));
 
     const blockedUser = receiveReportCount.reduce((acc, cur, index) => {
         if (cur >= k) {
@@ -7,10 +7,19 @@ function solution(id_list, report, k) {
         }
         return acc;
     }, []);
-    
-    console.log(reportedUser, blockedUser);
-    
-    return reportedUser.map(v => v);
+
+    return userReportList.reduce((acc, uRL, index) => {
+        const gotMails = uRL.reduce((uRL_acc, uRL_cur) => {
+            const search = blockedUser.findIndex(user => user === uRL_cur);
+            if (search !== -1) {
+                return uRL_acc + 1;
+            }
+            return uRL_acc;
+        }, 0);
+
+        acc[index] += gotMails;
+        return acc;
+    }, id_list.concat().fill(0, 0));
 }
 
 function reportSet(report) {
